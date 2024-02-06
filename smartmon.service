@@ -1,0 +1,10 @@
+[Unit]
+Description=Runs smartmon file exporter once
+Wants=smartmon.timer
+
+[Service]
+Type=oneshot
+ExecStart=/home/sschaeffner/smartmon/run.sh
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,8 @@
+[Unit]
+Description=Run smartmon every 15s
+
+[Timer]
+OnUnitActiveSec=15s
+
+[Install]
+WantedBy=timers.target
