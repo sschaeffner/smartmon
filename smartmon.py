@@ -244,10 +244,16 @@ def device_is_active(device):
         (bool) True if the device is active and False otherwise.
     """
     try:
-        smart_ctl('--nocheck', 'standby', *device.smartctl_select())
+        r = smart_ctl('--nocheck', 'standby', *device.smartctl_select())
     except subprocess.CalledProcessError:
+        #print("DEVICE INACTIVE")
         return False
 
+    if "IDLE_B" in r or "IDLE_C" in r or "STANDBY" in r:
+        #print("DEVICE INACTIVE {r}")
+        return False
+
+    #print(f"DEVICE ACTIVE {r}")
     return True
 
 
@@ -404,10 +410,13 @@ def collect_ata_error_count(device):
 
 def collect_disks_smart_metrics(wakeup_disks, by_id):
     for device in find_devices(by_id):
+        #print(f"collecting metrics for device {device}")
         is_active = device_is_active(device)
         metrics["device_active"].labels(
             device.base_labels["device"], device.base_labels["disk"],
         ).set(is_active)
+
+        #print(f"device is active={is_active}")
 
         # Skip further metrics collection to prevent the disk from spinning up.
         if not is_active and not wakeup_disks:
